@@ -1,55 +1,48 @@
 import { useEffect, useRef, useState } from "react";
 import socketIOClient from "socket.io-client";
 
-function incrementFooBy(delta) {
-  return (previousState, currentProps) => {
-      return delta;
-  };
+function useTimer(cb) {
+  // socket.on('newclientconnectaa', data => cb(null, data))
+  
+
+  const initiateTimer = (cb) => {
+    socket.on('newclientconnectaa', data => cb(null, data))
+  }
+
+  const startTimer = () => {
+    socket.send("start")
+  }
+
+  const stopTimer = () => {
+    socket.send("stop")
+  }
+
+  const speedUpTimer = () => {
+    socket.send("speedup")
+  }
+
+  return { initiateTimer, startTimer, stopTimer, speedUpTimer}
 }
 
+const socket = socketIOClient("/")
+
 function App() {
-  const socket = socketIOClient("/")
   const value = useRef(null)
   const [counter, setCounter] = useState(0);
+  const { initiateTimer, startTimer, stopTimer, speedUpTimer } = useTimer();
 
+  initiateTimer((err, timestamp) => {
+    setCounter(timestamp.description)
+  })
 
-  // useInterval(() => {
-  //   setCounter(counter + 1)
-  // }, 1000)
-
-
-  useEffect(() => {
-    socket.on("newclientconnectaa", data => {
-      // console.log(data.description)
-      // console.log("value", value.current)
-      value.current = data.description
-      setCounter(incrementFooBy(data.description))
-      // setCounter(data.description)
-    });
-
-    return () => socket.disconnect();
-  }, [])
-
-
-  console.log("here", value.current)
-  const handleClick = () => {
-    socket.send("start") 
-  }
-
-  const handleClick2 = () => {
-    socket.send("stop") 
-  }
-
-  const handleClick3 = () => {
-    socket.send("speedup") 
-  }
 
   return (
     <div>
       hello
-      <button onClick={handleClick}>Start Count</button>
-      <button onClick={handleClick2}>Stop Count</button>
-      <button onClick={handleClick3}>Speed Up</button>
+      {/* <button onClick={handleClick}>Start Count</button> */}
+      <button onClick={startTimer}>Start Count</button>
+      <button onClick={stopTimer}>Stop Count</button>
+      <button onClick={speedUpTimer}>Speed Up</button>
       {/* {Date.now()} */}
       <h1>{counter}</h1>
       {/* { value.current } */}
