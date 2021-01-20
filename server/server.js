@@ -18,61 +18,31 @@ app.get('*', (req,res) =>{
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 
-
 io.on("connection", (socket) => {
   let count = 0
   let counter;
 
   socket.on('message', data => {
-    console.log(data)
-
-    if (data === "start") {
-      clearInterval(counter)
-      counter = setInterval(() => {
-        if (count < 10) {
-          count += 1 
-        } else {
-          count = 1
-        }
-        console.log("count:", count)
-        socket.emit('counterConnect', {description: count})
-      }, 2000)
-    } else if (data === "speedup") {
-      clearInterval(counter)
-      counter = setInterval(() => {
-        if (count < 10) {
-          count += 1 
-        } else {
-          count = 1
-        }
-        console.log("count:", count)
-        socket.emit('counterConnect', {description: count})
-        // socket.emit('currentvalue', {data: count})
-      }, 1000)
-    } else if (data === "stop") {
-      clearInterval(counter)
-    } else if (data === "superfast") {
-      clearInterval(counter)
-      counter = setInterval(() => {
-        if (count < 10) {
-          count += 1 
-        } else {
-          count = 1
-        }
-        console.log("count:", count)
-        socket.emit('counterConnect', {description: count})
-        // socket.emit('currentvalue', {data: count})
-      }, 500)
+    switch (data) {
+      case "0":
+        clearInterval(counter);
+        break;
+      case data:
+        clearInterval(counter)
+        counter = setInterval(() => {
+          if (count < 10) {
+            count += 1 
+          } else {
+            count = 1
+          }
+          console.log("count:", count)
+          socket.emit('counterConnect', {description: count})
+        }, 2500 - 100 * parseInt(data))
+      break;
+        default:
+          clearInterval(counter);
     }
 
-    // socket.emit('currentvalue', {data: count})
-    // socket.emit('newclientconnect', {description: "where is this, welcome!"})
-
-
-    // setInterval(() => {
-    //   console.log("here")
-    //   socket.emit("newclientconnect", {description: "this is being sent again"})
-    // }, 500);
   })
 
 

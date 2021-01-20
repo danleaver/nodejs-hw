@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import styled from 'styled-components';
 import useTimer from './hooks/useTimer';
 
-import './App.css'
 function App() {
   const [counter, setCounter] = useState(null);
-  const { initiateTimer, startTimer, stopTimer, speedUpTimer, superFastTimer } = useTimer();
-  const [speed, setSpeed] = useState("2");
+  const { initiateTimer, runTimer} = useTimer();
+  const [speed, setSpeed] = useState("10");
+  const [running, setRunning] = useState(true);
 
   useEffect(() => {
     initiateTimer((err, timestamp) => {
@@ -16,52 +16,75 @@ function App() {
 
   useEffect(() => {
     switch (speed) {
-      case "0": 
-        stopTimer();
-      break;
-      case "1": 
-        startTimer();
-      break;
-      case "2": 
-        console.log("here")
-        speedUpTimer();
-      break;
-      case "3": 
-        superFastTimer();
+      case speed:
+        runTimer(speed);
       break;
       default: 
-        stopTimer();
+        runTimer("0")
     }    
   }, [speed])
+
+  useEffect(() => {
+    if (!running) {
+      runTimer("0")
+    } else {
+      runTimer(speed)
+    }
+  }, [running])
 
   return (
     <Wrapper>
       <h1> NodeJS Homework Challenge </h1>
       <h2>{counter}</h2>
       <Slider>
-        Stop
+        Slower
         <input
           type="range" 
-          min="0" 
-          max="3" 
+          min="1" 
+          max="20" 
           value={speed} 
           onChange={(e) => setSpeed(e.target.value)}
         />
         Faster
       </Slider>
+        <button onClick={() => setRunning(!running)}>
+          <Stop running={running}>{running ? "STOP" : "START"}</Stop>
+        </button>
       Try moving the slider to change the counter speed.
     </Wrapper>
   );
 }
+
 const Slider = styled.span`
   display: flex;
   justify-content: center;
-`
+`;
+
+
+const Stop = styled.div`
+  display: grid;
+  place-items: center;
+  color: white;
+ 
+  background: ${props => props.running ? "red" : "green"};
+  height: 50px;
+  width: 50px;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  ${props => props.speed === "0" && "display: none;"}
+
+  `;
+
+
 const Wrapper = styled.div`
   display: grid;
   place-items: center;
-  height: 50vh;
+  height: 60vh;
+  min-height: 600px;
+  max-width: 700px;
+  margin: auto;
+  padding: 0.5rem;
   text-align: center;
+  box-shadow: 5px 5px 15px 1px #000000;
 `
 
 export default App;
