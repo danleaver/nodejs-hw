@@ -4,9 +4,8 @@ import useTimer from './hooks/useTimer';
 
 function App() {
   const [counter, setCounter] = useState(null);
-  const { initiateTimer, runTimer} = useTimer();
+  const { initiateTimer, runTimer, serverRunning} = useTimer();
   const [speed, setSpeed] = useState("10");
-  const [running, setRunning] = useState(true);
 
   useEffect(() => {
     initiateTimer((err, timestamp) => {
@@ -24,13 +23,6 @@ function App() {
     }    
   }, [speed])
 
-  useEffect(() => {
-    if (!running) {
-      runTimer("0")
-    } else {
-      runTimer(speed)
-    }
-  }, [running])
 
   return (
     <Wrapper>
@@ -47,9 +39,9 @@ function App() {
         />
         Faster
       </Slider>
-        <button onClick={() => setRunning(!running)}>
-          <Stop running={running}>{running ? "STOP" : "START"}</Stop>
-        </button>
+      <button onClick={() => serverRunning ? runTimer("0") : runTimer(speed)}>
+        <Stop running={serverRunning}>{serverRunning ? "STOP" : "START"}</Stop>
+      </button>
       Try moving the slider to change the counter speed.
     </Wrapper>
   );
@@ -60,7 +52,6 @@ const Slider = styled.span`
   justify-content: center;
 `;
 
-
 const Stop = styled.div`
   display: grid;
   place-items: center;
@@ -70,10 +61,7 @@ const Stop = styled.div`
   height: 50px;
   width: 50px;
   clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
-  ${props => props.speed === "0" && "display: none;"}
-
-  `;
-
+`;
 
 const Wrapper = styled.div`
   display: grid;
@@ -85,6 +73,6 @@ const Wrapper = styled.div`
   padding: 0.5rem;
   text-align: center;
   box-shadow: 5px 5px 15px 1px #000000;
-`
+`;
 
 export default App;
