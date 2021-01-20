@@ -4,9 +4,11 @@ const socket = socketIOClient("/")
 
 function useTimer(callback) {
   const [serverRunning, setServerRunning] = useState(true);
+  const [serverSpeed, setServerSpeed] = useState(null);
 
   useEffect(() => {
     socket.on('runningStatus', data => setServerRunning(data.running))
+    socket.on('speed', data => setServerSpeed(data.speed))
   }, [])
 
   const initiateTimer = (callback) => {
@@ -19,7 +21,7 @@ function useTimer(callback) {
   }
 
 
-  return { initiateTimer, runTimer, serverRunning}
+  return { initiateTimer, runTimer, serverRunning, serverSpeed}
 }
 
 export default useTimer

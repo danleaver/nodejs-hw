@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from 'styled-components';
 import useTimer from './hooks/useTimer';
 
 function App() {
   const [counter, setCounter] = useState(null);
-  const { initiateTimer, runTimer, serverRunning} = useTimer();
-  const [speed, setSpeed] = useState("10");
+  const { initiateTimer, runTimer, serverRunning, serverSpeed} = useTimer();
+  const [speed, setSpeed] = useState(!serverSpeed ? "10" : null);
 
   useEffect(() => {
     initiateTimer((err, timestamp) => {
@@ -14,15 +14,12 @@ function App() {
   }, [])
 
   useEffect(() => {
-    switch (speed) {
-      case speed:
-        runTimer(speed);
-      break;
-      default: 
-        runTimer("0")
-    }    
+    runTimer(speed);     
   }, [speed])
 
+  useEffect(() => {
+    serverSpeed && setSpeed(serverSpeed)
+  }, [serverSpeed])
 
   return (
     <Wrapper>
