@@ -21,18 +21,10 @@ server.listen(port, () => console.log(`Listening on port ${port}`));
 
 io.on("connection", (socket) => {
   let count = 0
-  // socket.emit('newclientconnect', {description: "hey, welcome!"})
-  socket.emit('newclientconnect', {description: count})
-  
-  
-  // socket.emit('currentvalue', {data: count})
-
-
   let counter;
 
   socket.on('message', data => {
     console.log(data)
-
 
     if (data === "start") {
       clearInterval(counter)
@@ -43,9 +35,8 @@ io.on("connection", (socket) => {
           count = 1
         }
         console.log("count:", count)
-        socket.emit('newclientconnectaa', {description: count})
-        // socket.emit('currentvalue', {data: count})
-      }, 1000)
+        socket.emit('counterConnect', {description: count})
+      }, 2000)
     } else if (data === "speedup") {
       clearInterval(counter)
       counter = setInterval(() => {
@@ -55,11 +46,23 @@ io.on("connection", (socket) => {
           count = 1
         }
         console.log("count:", count)
-        socket.emit('newclientconnectaa', {description: count})
+        socket.emit('counterConnect', {description: count})
         // socket.emit('currentvalue', {data: count})
-      }, 500)
+      }, 1000)
     } else if (data === "stop") {
       clearInterval(counter)
+    } else if (data === "superfast") {
+      clearInterval(counter)
+      counter = setInterval(() => {
+        if (count < 10) {
+          count += 1 
+        } else {
+          count = 1
+        }
+        console.log("count:", count)
+        socket.emit('counterConnect', {description: count})
+        // socket.emit('currentvalue', {data: count})
+      }, 500)
     }
 
     // socket.emit('currentvalue', {data: count})

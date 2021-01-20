@@ -1,86 +1,67 @@
 import { useEffect, useRef, useState } from "react";
-import socketIOClient from "socket.io-client";
+import styled from 'styled-components';
+import useTimer from './hooks/useTimer';
 
-function useTimer(cb) {
-  // socket.on('newclientconnectaa', data => cb(null, data))
-  
-
-  const initiateTimer = (cb) => {
-    socket.on('newclientconnectaa', data => cb(null, data))
-  }
-
-  const startTimer = () => {
-    socket.send("start")
-  }
-
-  const stopTimer = () => {
-    socket.send("stop")
-  }
-
-  const speedUpTimer = () => {
-    socket.send("speedup")
-  }
-
-  return { initiateTimer, startTimer, stopTimer, speedUpTimer}
-}
-
-const socket = socketIOClient("/")
-
+import './App.css'
 function App() {
-  const value = useRef(null)
-  const [counter, setCounter] = useState(0);
-  const { initiateTimer, startTimer, stopTimer, speedUpTimer } = useTimer();
+  const [counter, setCounter] = useState(null);
+  const { initiateTimer, startTimer, stopTimer, speedUpTimer, superFastTimer } = useTimer();
+  const [speed, setSpeed] = useState("2");
 
-  initiateTimer((err, timestamp) => {
-    setCounter(timestamp.description)
-  })
+  useEffect(() => {
+    initiateTimer((err, timestamp) => {
+      setCounter(timestamp.description)
+    })
+  }, [])
 
+  useEffect(() => {
+    switch (speed) {
+      case "0": 
+        stopTimer();
+      break;
+      case "1": 
+        startTimer();
+      break;
+      case "2": 
+        console.log("here")
+        speedUpTimer();
+      break;
+      case "3": 
+        superFastTimer();
+      break;
+      default: 
+        stopTimer();
+    }    
+  }, [speed])
 
   return (
-    <div>
-      hello
-      {/* <button onClick={handleClick}>Start Count</button> */}
-      <button onClick={startTimer}>Start Count</button>
-      <button onClick={stopTimer}>Stop Count</button>
-      <button onClick={speedUpTimer}>Speed Up</button>
-      {/* {Date.now()} */}
-      <h1>{counter}</h1>
-      {/* { value.current } */}
-      {/* {value && <DisplayValue value={value}/> } */}
-    </div>
+    <Wrapper>
+      <h1> NodeJS Homework Challenge </h1>
+      <h2>{counter}</h2>
+      <Slider>
+        Stop
+        <input
+          type="range" 
+          min="0" 
+          max="3" 
+          value={speed} 
+          onChange={(e) => setSpeed(e.target.value)}
+        />
+        Faster
+      </Slider>
+      Try moving the slider to change the counter speed.
+    </Wrapper>
   );
 }
-
-
-
-// function useInterval(callback, delay) {
-//   const savedCallback = useRef();
-
-//   // Remember the latest callback.
-//   useEffect(() => {
-//     savedCallback.current = callback;
-//   }, [callback]);
-
-//   // Set up the interval.
-//   useEffect(() => {
-//     let id = setInterval(() => {
-//       savedCallback.current();
-//     }, delay);
-//     return () => clearInterval(id);
-//   }, [delay]);
-// }
-
-
-
-
-
-const DisplayValue = (props) => {
-  return (
-    <div>
-      {props.value.current}
-    </div>
-  )
-
-}
+const Slider = styled.span`
+  display: flex;
+  justify-content: center;
+`
+const Wrapper = styled.div`
+  display: grid;
+  place-items: center;
+  height: 50vh;
+  text-align: center;
+`
 
 export default App;
